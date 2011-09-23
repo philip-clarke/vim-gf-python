@@ -43,21 +43,40 @@ import sys
 import re
 import glob
 import os
-def python_goto_file():
-    cw = vim.eval('expand("<cfile>")')
-    module = re.sub('\.', '/', cw)
-    for p in sys.path:
-        d = os.path.join(p, module)
+
+def find_in_path(module, path_group):
+    for path in path_group:
+        d = os.path.join(path, module)
         if os.path.isdir(d):
             f = os.path.join(d, '__init__.py')
             if os.path.isfile(f):
                 vim.command('split %s' % f)
-                return
-        g = os.path.join(p, '%s.py*' % module )
+                return True
+        g = os.path.join(path, '%s.py*' % module )
         for f in glob.iglob(g):
             vim.command('split %s' % f)
+            return True
+
+    return False
+
+
+def python_goto_file():
+    cw = vim.eval('expand("<cfile>")')
+    module = re.sub('\.', '/', cw)
+
+    # look in vim's path first and if not found, look in sys.path
+    path_groups = [
+        vim.eval('&path').split(','),
+        sys.path,
+    ]
+
+    for path_group in path_groups:
+        found = find_in_path(module, path_group)
+        if found == True:
             return
-    print >> sys.stderr, 'E447: Can\'t find file "%s" in python\'s sys.path' % cw
+
+    print >> sys.stderr, 'E447: Can\'t find file "%s"' % cw
+
 EOF
 
 map gf :python python_goto_file()<cr>
