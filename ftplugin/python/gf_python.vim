@@ -50,11 +50,11 @@ def find_in_path(module, path_group):
         if os.path.isdir(d):
             f = os.path.join(d, '__init__.py')
             if os.path.isfile(f):
-                vim.command('split %s' % f)
+                vim.command('edit %s' % f)
                 return True
         g = os.path.join(path, '%s.py*' % module )
         for f in glob.iglob(g):
-            vim.command('split %s' % f)
+            vim.command('edit %s' % f)
             return True
 
     return False
