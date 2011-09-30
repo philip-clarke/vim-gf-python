@@ -52,7 +52,7 @@ def find_in_path(module, path_group):
             if os.path.isfile(f):
                 vim.command('edit %s' % f)
                 return True
-        g = os.path.join(path, '%s.py*' % module )
+        g = os.path.join(path, '%s.py' % module )
         for f in glob.iglob(g):
             vim.command('edit %s' % f)
             return True
